@@ -12,7 +12,7 @@ set_state:
     new_state:
       name: New State
       required: true
-      description: "on/off"
+      description: "Set state of binary sensor"
       selector:
         select:
           options:

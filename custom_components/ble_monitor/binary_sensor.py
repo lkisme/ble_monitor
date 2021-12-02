@@ -2,6 +2,8 @@
 from datetime import timedelta
 import asyncio
 import logging
+import voluptuous as vol
+from homeassistant.helpers import entity_platform
 
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity
@@ -52,10 +54,12 @@ async def async_setup_entry(hass, config_entry, add_entities):
     blemonitor = hass.data[DOMAIN]["blemonitor"]
     bleupdater = BLEupdaterBinary(blemonitor, add_entities)
     hass.loop.create_task(bleupdater.async_run(hass))
+    platform = entity_platform.current_platform.get()
     platform.async_register_entity_service(
         SERVICE_SET_STATE, SERVICE_SET_STATE_SCHEMA, "set_state",
     )
     _LOGGER.debug("Binary sensor entry setup finished")
+    
     # Return successful setup
     return True
 
@@ -305,16 +309,16 @@ class BaseBinarySensor(RestoreEntity, BinarySensorEntity):
         """Check if entity is enabled."""
         return self.enabled and self.ready_for_update
 
+    @property
+    def is_on(self):
+        """Return true if the binary sensor is on."""
+        return bool(self._state) if self._state is not None else None
+
     async def set_state(self, new_state: str):
         if new_state == "on":
             self._state = True;
         else:
             self._state = False;
-
-    @property
-    def is_on(self):
-        """Return true if the binary sensor is on."""
-        return bool(self._state) if self._state is not None else None
 
     def get_device_settings(self):
         """Set device settings."""
