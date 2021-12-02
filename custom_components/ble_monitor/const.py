@@ -68,6 +68,7 @@ CONF_DEVICE_DELETE_DEVICE = "delete device"
 CONFIG_IS_FLOW = "is_flow"
 
 SERVICE_CLEANUP_ENTRIES = "cleanup_entries"
+SERVICE_SET_STATE = "set_state"
 
 # Default values for configuration options
 DEFAULT_BT_AUTO_RESTART = False

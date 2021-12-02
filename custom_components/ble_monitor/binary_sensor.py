@@ -31,10 +31,14 @@ from .const import (
     BINARY_SENSOR_TYPES,
     DOMAIN,
     BLEMonitorBinarySensorEntityDescription,
+    SERVICE_SET_STATE,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
+SERVICE_SET_STATE_SCHEMA = vol.Schema({
+    vol.Required("new_state"): vol.In(["on", "off"]),
+    })
 
 async def async_setup_platform(hass, conf, add_entities, discovery_info=None):
     """Set up from setup_entry."""
@@ -48,6 +52,9 @@ async def async_setup_entry(hass, config_entry, add_entities):
     blemonitor = hass.data[DOMAIN]["blemonitor"]
     bleupdater = BLEupdaterBinary(blemonitor, add_entities)
     hass.loop.create_task(bleupdater.async_run(hass))
+    platform.async_register_entity_service(
+        SERVICE_SET_STATE, SERVICE_SET_STATE_SCHEMA, "set_state",
+    )
     _LOGGER.debug("Binary sensor entry setup finished")
     # Return successful setup
     return True
@@ -297,6 +304,12 @@ class BaseBinarySensor(RestoreEntity, BinarySensorEntity):
     def pending_update(self):
         """Check if entity is enabled."""
         return self.enabled and self.ready_for_update
+
+    async def set_state(self, new_state: str):
+        if new_state == "on":
+            self._state = True;
+        else:
+            self._state = False;
 
     @property
     def is_on(self):

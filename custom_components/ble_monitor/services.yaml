@@ -1,3 +1,20 @@
 cleanup_entries:
   # Description of the service
   description: Clean up of dangling devices of the BLE Montitor integration.
+set_state:
+  name: Set state of binary sensor
+  description: Set state of entity belongs the BLE Montitor integration.
+  target:
+    entity:
+      domain: binary_sensor
+      integration: ble_monitor
+  fields:
+    new_state:
+      name: New State
+      required: true
+      description: "on/off"
+      selector:
+        select:
+          options:
+            - "on"
+            - "off"
